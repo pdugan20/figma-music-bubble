@@ -1,6 +1,6 @@
 {
   "name": "iMessage Music Builder",
-  "id": "music-bubble-filler",
+  "id": "1652043984127056655",
   "api": "1.0.0",
   "main": "dist/plugin.js",
   "ui": "dist/ui.html",
