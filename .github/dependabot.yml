@@ -9,7 +9,10 @@ updates:
       timezone: 'America/Los_Angeles'
     open-pull-requests-limit: 5
     commit-message:
-      prefix: 'chore(deps)'
+      # prefix 'chore' + include 'scope' yields chore(deps): / chore(deps-dev):.
+      # prefix 'chore(deps)' would emit chore(deps)(deps-dev): double scopes that
+      # break release-please and the semantic PR-title check.
+      prefix: 'chore'
       include: 'scope'
     labels:
       - 'dependencies'
