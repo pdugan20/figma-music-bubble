@@ -12,7 +12,7 @@ function textNode(name: string) {
   }
 }
 
-function buildInstance() {
+function buildInstance(componentProperties: Record<string, unknown> = {}) {
   const song = textNode('Song Name')
   const artist = textNode('Artist Name')
   const albumArt = { name: 'Album Art', type: 'RECTANGLE', fills: [] as unknown[] }
@@ -20,6 +20,8 @@ function buildInstance() {
   return {
     nodes,
     instance: {
+      componentProperties,
+      setProperties: vi.fn(),
       setRelaunchData: vi.fn(),
       findOne: (p: (n: { name: string; type: string }) => boolean) =>
         [song, artist, albumArt].find((n) => p(n)) ?? null,
@@ -62,7 +64,43 @@ describe('fillBubble', () => {
   })
 
   it('returns false when required layers are missing', async () => {
-    const instance = { findOne: () => null, findAll: () => [], setRelaunchData: vi.fn() }
+    const instance = {
+      componentProperties: {},
+      setProperties: vi.fn(),
+      findOne: () => null,
+      findAll: () => [],
+      setRelaunchData: vi.fn(),
+    }
     expect(await fillBubble(instance as never, data)).toBe(false)
+  })
+
+  it('enables the dynamic-colors variant when the property exists', async () => {
+    const { instance } = buildInstance({
+      'Uses dynamic colors': { type: 'VARIANT', value: 'False' },
+    })
+    await fillBubble(instance as never, data)
+    expect(instance.setProperties).toHaveBeenCalledWith({ 'Uses dynamic colors': 'True' })
+  })
+
+  it('does not set properties when the dynamic-colors variant is absent', async () => {
+    const { instance } = buildInstance()
+    await fillBubble(instance as never, data)
+    expect(instance.setProperties).not.toHaveBeenCalled()
+  })
+
+  it('temporarily enables the tail to color it, then restores the original value', async () => {
+    const { instance } = buildInstance({ 'Has tail': { type: 'VARIANT', value: 'False' } })
+    await fillBubble(instance as never, data)
+    const calls = instance.setProperties.mock.calls.map((c) => c[0] as Record<string, string>)
+    const enableIdx = calls.findIndex((c) => c['Has tail'] === 'True')
+    const restoreIdx = calls.findIndex((c) => c['Has tail'] === 'False')
+    expect(enableIdx).toBeGreaterThanOrEqual(0)
+    expect(restoreIdx).toBeGreaterThan(enableIdx)
+  })
+
+  it('leaves the tail untouched when it is already on', async () => {
+    const { instance } = buildInstance({ 'Has tail': { type: 'VARIANT', value: 'True' } })
+    await fillBubble(instance as never, data)
+    expect(instance.setProperties).not.toHaveBeenCalled()
   })
 })
