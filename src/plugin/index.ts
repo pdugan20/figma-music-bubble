@@ -1,12 +1,12 @@
 import { PopulateMessage } from '../types'
 import { getSelectionStatus } from './selection'
-import { SelectionBubbleSource } from './bubble-source'
+import { CanvasBubbleSource } from './bubble-source'
 import { fillBubble } from './fill'
 import { TOOL_ID, DISPLAY_NAME } from './meta'
 
-const bubbleSource = new SelectionBubbleSource()
+const bubbleSource = new CanvasBubbleSource()
 
-figma.showUI(__html__, { width: 320, height: 480 })
+figma.showUI(__html__, { themeColors: true, width: 320, height: 480 })
 figma.root.setRelaunchData({ [TOOL_ID]: DISPLAY_NAME })
 
 function postSelection() {
@@ -21,7 +21,7 @@ figma.on('selectionchange', postSelection)
 
 figma.ui.onmessage = async (msg: PopulateMessage) => {
   if (msg.type !== 'populate') return
-  const resolved = bubbleSource.resolve()
+  const resolved = await bubbleSource.resolve()
   if (!resolved.ok) {
     figma.notify(resolved.message)
     return
@@ -31,5 +31,6 @@ figma.ui.onmessage = async (msg: PopulateMessage) => {
     figma.notify('Could not find the expected layers in this Music Bubble')
     return
   }
-  figma.notify(`Populated with "${msg.trackName}" by ${msg.artistName}`)
+  if (resolved.created) figma.currentPage.selection = [resolved.instance]
+  figma.notify(`Added ${msg.trackName} by ${msg.artistName}`)
 }
