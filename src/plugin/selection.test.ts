@@ -11,17 +11,17 @@ function instanceWithSong() {
 
 describe('getSelectionStatus', () => {
   it('empty selection offers to insert', () => {
-    expect(getSelectionStatus([] as never).message).toBe('A new bubble will be added')
+    expect(getSelectionStatus([] as never).message).toBe('No bubble selected')
   })
 
   it('multiple selection offers to insert', () => {
-    expect(getSelectionStatus([{}, {}] as never).message).toBe('A new bubble will be added')
+    expect(getSelectionStatus([{}, {}] as never).message).toBe('No bubble selected')
   })
 
   it('non-instance offers to insert', () => {
     const status = getSelectionStatus([{ type: 'RECTANGLE' }] as never)
     expect(status.ok).toBe(false)
-    expect(status.message).toBe('A new bubble will be added')
+    expect(status.message).toBe('No bubble selected')
   })
 
   it('instance missing Song Name offers to insert', () => {

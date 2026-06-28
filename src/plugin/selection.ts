@@ -2,7 +2,7 @@ import { SelectionStatus } from '../types'
 import { LAYER } from './bubble-schema'
 
 export function getSelectionStatus(selection: readonly SceneNode[]): SelectionStatus {
-  const insert: SelectionStatus = { ok: false, message: 'A new bubble will be added' }
+  const insert: SelectionStatus = { ok: false, message: 'No bubble selected' }
   if (selection.length !== 1) return insert
   const node = selection[0]
   if (node.type !== 'INSTANCE') return insert
