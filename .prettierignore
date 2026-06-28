@@ -1,3 +1,7 @@
 dist
 coverage
 node_modules
+
+# Managed by release-please; regenerated each release in its own format
+CHANGELOG.md
+.release-please-manifest.json
