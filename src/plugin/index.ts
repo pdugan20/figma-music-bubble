@@ -6,7 +6,7 @@ import { TOOL_ID, DISPLAY_NAME } from './meta'
 
 const bubbleSource = new SelectionBubbleSource()
 
-figma.showUI(__html__, { width: 320, height: 480 })
+figma.showUI(__html__, { themeColors: true, width: 320, height: 480 })
 figma.root.setRelaunchData({ [TOOL_ID]: DISPLAY_NAME })
 
 function postSelection() {
